@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PlacentaSync</string>
+    <string name="title_activity_main">PlacentaSync</string>
+    <string name="package_name">com.senushidinara.placentasync</string>
+    <string name="custom_url_scheme">com.senushidinara.placentasync</string>
+</resources>

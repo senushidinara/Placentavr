@@ -1,0 +1,66 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Sync Capacitor Android project
+        run: npx cap sync android
+
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease
+
+      - name: Sign release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+        run: |
+          mkdir -p signed
+          keytool -genkeypair -v \
+            -keystore /tmp/placentasync-release.jks \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -keypass "$KEYSTORE_PASSWORD" \
+            -alias placentasync \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=PlacentaSync, OU=Mobile, O=senushidinara, L=Unknown, ST=Unknown, C=US"
+          APK="android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          ZIPALIGNED="signed/placentasync-release-aligned.apk"
+          zipalign -f 4 "$APK" "$ZIPALIGNED"
+          apksigner sign \
+            --ks /tmp/placentasync-release.jks \
+            --ks-pass "pass:$KEYSTORE_PASSWORD" \
+            --key-pass "pass:$KEYSTORE_PASSWORD" \
+            --out signed/placentasync-release.apk \
+            "$ZIPALIGNED"
+          apksigner verify --verbose signed/placentasync-release.apk
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: placentasync-release-apk
+          path: signed/placentasync-release.apk
