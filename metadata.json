@@ -1,0 +1,6 @@
+{
+  "name": "PlacentaSync VR - Meta XR Interaction Controller",
+  "description": "Production-ready C# Meta XR SDK v81+ architecture and interactive 3D spatial simulation for a hands-first, seated-optimized maternal care companion with 0.6m ergonomic threshold, state toggle, and structured logging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
