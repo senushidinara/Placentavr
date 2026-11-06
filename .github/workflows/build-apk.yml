@@ -36,7 +36,7 @@ jobs:
 
       - name: Sign release APK
         env:
-          KEYSTORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          KEYSTORE_PASSWORD: PlacentasyncBuild2026!9fK2
         run: |
           mkdir -p signed
           keytool -genkeypair -v \
